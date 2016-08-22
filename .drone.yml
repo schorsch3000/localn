@@ -1,0 +1,5 @@
+build:
+  image: schorsch3000/drone_default
+  commands:
+    - rm -rf /usr/local/bin/node /usr/bin/node
+    - make drone

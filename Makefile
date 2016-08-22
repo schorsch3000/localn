@@ -1,4 +1,4 @@
-.PHONY: container test shellcheck try
+.PHONY: container test shellcheck try drone
 test: shellcheck try
 
 
@@ -11,3 +11,11 @@ shellcheck: container
 
 try: container
 	docker run --rm -it localn /try.sh
+
+drone:
+	rm -rf .localn
+	shellcheck src/*.sh
+	cp -rp src/localn.sh /bin/localn
+	./try.sh
+	rm -rf .localn
+
