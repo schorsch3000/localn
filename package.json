@@ -1,0 +1,25 @@
+{
+  "name": "localn",
+  "version": "0.1.0",
+  "description": "like n, but local",
+  "scripts": {
+    "test": "make"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schorsch3000/localn.git"
+  },
+  "keywords": [
+    "n",
+    "node"
+  ],
+  "author": "dirk heilig",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schorsch3000/localn/issues"
+  },
+  "homepage": "https://github.com/schorsch3000/localn#readme",
+    "bin":{
+      "localn":"src/localn.sh"
+    }
+}
