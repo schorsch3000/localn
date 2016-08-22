@@ -7,8 +7,24 @@ if [ "$1" == "init" ]; then
     echo export PATH="$root/.localn/bin/:$PATH"
     exit
 fi
+abort(){
+    echo "$@"
+    exit 1
+}
+check_command(){
+    which "$1" >/dev/null ||  abort command "$1" not found...
 
+}
 
+check_command wget
+check_command realpath
+check_command egrep
+check_command grep
+check_command fgrep
+check_command sort
+check_command tail
+check_command head
+check_command tr
 
 WGET_PARAMS=( "--no-check-certificate"
               "-q"
@@ -16,10 +32,7 @@ WGET_PARAMS=( "--no-check-certificate"
 GET="wget ${WGET_PARAMS[*]}"
 MIRROR=https://nodejs.org/dist/
 
-abort(){
-    echo "$@"
-    exit 1
-}
+
 display_latest_stable_version() {
   $GET 2> /dev/null ${MIRROR} \
     | egrep "</a>" \
