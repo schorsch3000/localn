@@ -85,7 +85,7 @@ check_version_availible(){
 install_node(){
     check_version_availible "$1" || abort version \""$1"\" not availible
     local os=$(uname -s)
-    os=${os,,}
+    os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
     url="http://nodejs.org/dist/v$1/node-v$1-${os}-x64.tar.gz"
     cd ./.localn/
     echo -n "Downloading node version (if not cached): $1..."
