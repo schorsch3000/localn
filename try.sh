@@ -5,6 +5,7 @@ echo running some real world tests...
 fail(){
     echo -e "\n\n\n\n"
     echo "$@"
+    exit 1
 }
 localn && fail "it shouldn\t run before init" || true
 
@@ -12,7 +13,7 @@ $(/bin/localn init)
 
 localn || fail "it should run after init"
 
-which node && fail "node shouln't be availible befor installing" || true
+which node && fail "node shouln't be availible before installing" || true
 
 localn 4.0.0 || fail "it should install node version 4.0.0"
 
@@ -22,7 +23,8 @@ node -v | fgrep -q 4.0.0 || fail "node 4.0.0 should be installed by now"
 
 which npm || fail "npm should be installed by now"
 
-npm -v | fgrep -q 3.7.2 || fail "npm 3.7.2 should be installed by now"
+npm -v
+npm -v | fgrep -q 2.14.2 || fail "npm 2.14.2 should be installed by now"
 
 
 rm -rf .localn
