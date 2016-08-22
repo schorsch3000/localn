@@ -71,7 +71,9 @@ check_version_availible(){
 
 install_node(){
     check_version_availible "$1" || abort version \""$1"\" not availible
-    url="http://nodejs.org/dist/v$1/node-v$1-linux-x64.tar.gz"
+    local os=$(uname -s)
+    os=${os,,}
+    url="http://nodejs.org/dist/v$1/node-v$1-${os}-x64.tar.gz"
     cd ./.localn/
     echo -n "Downloading node version (if not cached): $1..."
     wget -cq "$url"
