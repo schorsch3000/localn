@@ -84,9 +84,6 @@ check_version_availible(){
 
 install_node(){
     check_version_availible "$1" || abort version \""$1"\" not availible
-    local os=$(uname -s)
-    os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
-    local arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
     url="http://nodejs.org/dist/v$1/node-v$1-${os}-${arch}.tar.gz"
     cd ./.localn/
     echo -n "Downloading node version (if not cached): $1..."
@@ -113,6 +110,27 @@ install_node(){
     npm -v
 }
 
+install_module(){
+    npm i -g "$1"
+    nodepath="$root/.localn/node-$(node -v)-${os}-${arch}"
+    for bin in ${nodepath}/bin/* ; do
+    bn="$(basename "$bin")"
+    if [ "$bn" == "node" ]; then
+        continue
+    fi
+    if [ "$bn" == "npm" ]; then
+        continue
+    fi
+    targetpath="$root/.localn/bin/${bn}"
+    test -e "$targetpath" && rm "$targetpath"
+    ln -s "$(realpath "$bin")" "$targetpath"
+    done
+
+}
+
+    os=$(uname -s)
+    os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
+    arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
 
 echo "$PATH" | fgrep -q "$root/.localn/bin" || abort localn is not in path, you should run \$\("$0" init\)
 
@@ -132,6 +150,9 @@ case $1 in
         ;;
     "latest")
         install_node "$(display_latest_version)"
+        ;;
+    "module")
+        install_module "$2"
         ;;
     *)
         install_node "$1"
