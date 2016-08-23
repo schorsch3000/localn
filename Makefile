@@ -19,3 +19,5 @@ drone:
 	./try.sh
 	rm -rf .localn
 
+login: container
+	docker run --rm -v "$(PWD)/src/localn.sh:/bin/localn" -it localn /bin/bash

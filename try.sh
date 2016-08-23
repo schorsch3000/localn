@@ -42,4 +42,11 @@ localn latest
 which node || fail "node latest should be installed by now"
 which node || fail "npm bundled by node latest should be installed by now"
 
+which npm-cache && fail "modules should not be installed by default"  || true
+
+localn module npm-cache || fail "modules should be installable"
+npm-cache -v || fail "installed module should have it't bin's exposed"
+
+
+
 
