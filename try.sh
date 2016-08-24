@@ -48,11 +48,11 @@ localn module npm-cache || fail "modules should be installable"
 npm-cache -v || fail "installed module should have it't bin's exposed"
 
 
-test -d /tmp/cachedir && fail "cachedir should not me there initially" || true
+test -d /tmp/cachedir && fail "cachedir should not be there initially" || true
 localn cachedir /tmp/cachedir || fail "setting cachedir should not fail"
 localn stable || fail "node should be installable with set cachedir"
 test -d /tmp/cachedir || fail "cachedir should be after cached install"
-test -f /tmp/cachedir/node-v6.4.0-*-*.tar.gz || fail "cached file should ne in cachedir"
+test -f /tmp/cachedir/node-v6.4.0-*-*.tar.gz || fail "cached file should be in cachedir"
 
 
 
