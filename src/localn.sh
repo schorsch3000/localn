@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
+
 root=$PWD
 
 if [ "$1" == "init" ]; then
@@ -85,7 +86,7 @@ check_version_availible(){
 
 install_node(){
     check_version_availible "$1" || abort version \""$1"\" not availible
-    isvar cachedir || setvar cachedir "$(realpath "$root/.localn")"
+    isvar cachedir || setvarlocal cachedir "$(realpath "$root/.localn")"
     mkdir -p "$(getvar cachedir)"
     filename="node-v$1-${os}-${arch}.tar.gz"
     cachefilepath="$(getvar cachedir)/$filename"
@@ -116,16 +117,21 @@ install_module(){
     npm i -g "$1"
 }
 
-setvar(){
+setvarlocal(){
     mkdir -p "$root/.localn/conf/"
     echo "$2" > "$root/.localn/conf/$1"
 }
+setvarglobal(){
+    mkdir -p "$HOME/.localn/conf/"
+    echo "$2" > "$HOME/.localn/conf/$1"
+    rm -rf "$root/.localn/conf/$1"
+}
 getvar(){
-    test -f "$root/.localn/conf/$1" || return 0
-    cat "$root/.localn/conf/$1"
+    (test -f "$root/.localn/conf/$1" && cat "$root/.localn/conf/$1") ||
+    (test -f "$HOME/.localn/conf/$1" && cat "$HOME/.localn/conf/$1") || return 0
 }
 isvar(){
-    test -f "$root/.localn/conf/$1"
+    test -f "$root/.localn/conf/$1" || test -f "$HOME/.localn/conf/$1"
 }
     os=$(uname -s)
     os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
@@ -154,7 +160,7 @@ case $1 in
         install_module "$2"
         ;;
     "cachedir")
-        setvar cachedir "$2"
+        setvarglobal cachedir "$2"
         ;;
     *)
         install_node "$1"
