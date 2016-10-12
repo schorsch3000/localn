@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
+
 root=$PWD
 binpath="$root/.localn/bin"
 mkdir -p "$binpath"
 binpath="$(realpath "$binpath")"
 if [ "$1" == "init" ]; then
-
     echo export PATH="$binpath:$PATH"
     exit
 fi
@@ -83,27 +83,25 @@ check_version_availible(){
 
 install_node(){
     check_version_availible "$1" || abort version \""$1"\" not availible
-    local os=$(uname -s)
-    os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
-    local arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
-    url="http://nodejs.org/dist/v$1/node-v$1-${os}-${arch}.tar.gz"
+    isvar cachedir || setvarlocal cachedir "$(realpath "$root/.localn")"
+    mkdir -p "$(getvar cachedir)"
+    filename="node-v$1-${os}-${arch}.tar.gz"
+    cachefilepath="$(getvar cachedir)/$filename"
+    url="http://nodejs.org/dist/v$1/$filename"
     cd ./.localn/
     echo -n "Downloading node version (if not cached): $1..."
-    wget -cq "$url"
+    wget -cq -O "$cachefilepath" "$url"
     echo -e '\b\b\b Done'
-    test -d "$(basename "$url" .tar.gz)" || (
-        echo -n "Unpackingnode version: $1..."
-        tar -xf "$(basename "$url")"
+    test -d "$(basename "$cachedilepath" .tar.gz)" || (
+        echo -n "Unpacking node version: $1..."
+        tar -xf "$cachefilepath"
         echo -e '\b\b\b Done'
     )
 
 
-    rm -rf "$root/.localn/bin/"
-    mkdir -p "$root/.localn/bin/"
-    cd "$(basename "$url" .tar.gz)/bin"
-    ln -s "$(realpath node)" "$root/.localn/bin/node"
-    ln -s "$(realpath npm*)" "$root/.localn/bin/npm"
-
+    rm -rf "$root/.localn/bin"
+    cd "$(basename "$url" .tar.gz)/"
+    ln -s "$(realpath bin)" "$root/.localn/"
     echo
     echo
     echo -n "node version: "
@@ -114,6 +112,31 @@ install_node(){
 
 echo "$PATH" | fgrep -q "$binpath" || abort localn is not in path, you should run \$\("$0" init\)
 
+install_module(){
+    npm i -g "$1"
+}
+
+setvarlocal(){
+    mkdir -p "$root/.localn/conf/"
+    echo "$2" > "$root/.localn/conf/$1"
+}
+setvarglobal(){
+    mkdir -p "$HOME/.localn/conf/"
+    echo "$2" > "$HOME/.localn/conf/$1"
+    rm -rf "$root/.localn/conf/$1"
+}
+getvar(){
+    (test -f "$root/.localn/conf/$1" && cat "$root/.localn/conf/$1") ||
+    (test -f "$HOME/.localn/conf/$1" && cat "$HOME/.localn/conf/$1") || return 0
+}
+isvar(){
+    test -f "$root/.localn/conf/$1" || test -f "$HOME/.localn/conf/$1"
+}
+
+
+os=$(uname -s)
+os=$(echo "$os" | tr '[:upper:]' '[:lower:]' )
+arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
 
 
 mkdir -p ./.localn/bin/
@@ -132,6 +155,12 @@ case $1 in
         ;;
     "latest")
         install_node "$(display_latest_version)"
+        ;;
+    "module")
+        install_module "$2"
+        ;;
+    "cachedir")
+        setvarglobal cachedir "$2"
         ;;
     *)
         install_node "$1"

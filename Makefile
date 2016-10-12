@@ -18,3 +18,5 @@ drone:
 	cp -rp src/localn.sh /bin/localn
 	shpec
 
+login: container
+	docker run --rm -v "$(PWD)/src/localn.sh:/bin/localn" -it localn /bin/bash
