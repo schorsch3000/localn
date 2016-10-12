@@ -1,5 +1,5 @@
 .PHONY: container test shellcheck try drone
-test: shellcheck try
+test: shellcheck test
 
 
 container:

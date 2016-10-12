@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+cd /tmp
+
 describe "localn"
     it "should fail if called uninitialized"
         localn stable >/dev/null
