@@ -1,5 +1,18 @@
 build:
-  image: schorsch3000/drone_default
-  commands:
-    - rm -rf /usr/local/bin/node /usr/bin/node
-    - make drone
+  test:
+    image: schorsch3000/drone_default
+    commands:
+      - rm -rf /usr/local/bin/node /usr/bin/node .localn
+      - which shpec || wget -qO - https://raw.github.com/rylnd/shpec/master/install.sh | bash
+      - make drone
+      - rm -rf .localn
+
+  packDeb:
+    image: schorsch3000/drone-mkdeb
+    commands:
+      - rm -rf ./debroot
+      - mkdir -p ./debroot/usr/local/bin
+      - cp src/localn.sh ./debroot/usr/local/bin/localn
+      - mkDeb --root ./debroot --name localn --version "$(git describe || (echo -n "0.0.0-";git rev-parse --short HEAD))" --description kind of rbenv for node
+      - rm -rf ./debroot
+      - chown $(stat -c '%u' .drone.yml):$(stat -c '%g' .drone.yml) *.deb

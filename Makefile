@@ -9,13 +9,12 @@ container:
 shellcheck: container
 	docker run --rm -it localn shellcheck /bin/localn
 
-try: container
-	docker run --rm -it localn /try.sh
+test: container
+	docker run --rm -it localn bash /usr/local/bin/shpec
 
 drone:
 	rm -rf .localn
 	shellcheck src/*.sh
 	cp -rp src/localn.sh /bin/localn
-	./try.sh
-	rm -rf .localn
+	shpec
 

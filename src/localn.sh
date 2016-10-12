@@ -2,11 +2,16 @@
 set -e
 
 root=$PWD
-
+binpath="$root/.localn/bin"
+mkdir -p "$binpath"
+binpath="$(realpath "$binpath")"
 if [ "$1" == "init" ]; then
-    echo export PATH="$root/.localn/bin/:$PATH"
+
+    echo export PATH="$binpath:$PATH"
     exit
 fi
+
+
 abort(){
     echo "$@"
     exit 1
@@ -72,12 +77,6 @@ display_remote_versions() {
 
 }
 
-#display_latest_stable_version
-#display_latest_lts_version
-#display_latest_version
-
-#display_remote_versions
-
 check_version_availible(){
     display_remote_versions | grep  . | grep -q -- "$1"
 }
@@ -113,8 +112,9 @@ install_node(){
     npm -v
 }
 
+echo "$PATH" | fgrep -q "$binpath" || abort localn is not in path, you should run \$\("$0" init\)
 
-echo "$PATH" | fgrep -q "$root/.localn/bin" || abort localn is not in path, you should run \$\("$0" init\)
+
 
 mkdir -p ./.localn/bin/
 which wget >/dev/null || abort wget required
@@ -122,7 +122,7 @@ which wget >/dev/null || abort wget required
 
 case $1 in
     "")
-        echo "HELP"
+        exit 1
         ;;
     "stable")
         install_node "$(display_latest_stable_version)"
