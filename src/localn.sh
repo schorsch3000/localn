@@ -2,10 +2,9 @@
 set -e
 
 
-root=$PWD
+root="$(realpath "$PWD")"
 binpath="$root/.localn/bin"
 mkdir -p "$binpath"
-binpath="$(realpath "$binpath")"
 if [ "$1" == "init" ]; then
     echo export PATH="$binpath:$PATH"
     exit
