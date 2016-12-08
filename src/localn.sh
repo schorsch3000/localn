@@ -112,9 +112,38 @@ install_node(){
 echo "$PATH" | fgrep -q "$binpath" || abort localn is not in path, you should run \$\("$0" init\)
 
 install_module(){
+case $1 in
+    "")
+        exit 1
+        ;;
+    "yarn")
+        install_yarn
+        ;;
+    *)
     npm i -g "$1"
+esac
 }
 
+install_yarn(){
+    echo using direct installer, it\'s faster than using npm
+    cd ./.localn/
+    rm -rf yarn.tar.gz
+    wget -q https://yarnpkg.com/latest.tar.gz -O yarn.tar.gz
+    rm -rf yarn
+    mkdir yarn
+    cd yarn
+    tar -xzf ../yarn.tar.gz --strip-components=1
+    cd ../bin
+    {
+        echo "#!/bin/bash"
+        echo "export HOME=\"$(realpath ..)\""
+        echo "node \"$binpath/../yarn/bin/yarn.js\" \"\$@\""
+        echo "exit \$?"
+    }>yarn
+    chmod +x yarn
+
+
+}
 setvarlocal(){
     mkdir -p "$root/.localn/conf/"
     echo "$2" > "$root/.localn/conf/$1"

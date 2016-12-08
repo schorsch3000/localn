@@ -55,5 +55,16 @@ describe "localn"
 
     end
 
+    it "should install yarn without using nom"
+        $(/bin/localn init)
+        localn stable &>/dev/null
+        stub_command npm
+        yarn --help &>/dev/null
+        assert equal "$?" "127" # check yarn is not present
+        localn module yarn &>/dev/null
+        yarn --help &>/dev/null
+        assert equal "$?" "0"
+    end
+
 
 end
