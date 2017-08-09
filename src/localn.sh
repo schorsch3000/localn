@@ -46,7 +46,8 @@ display_latest_stable_version() {
 }
 display_latest_lts_version() {
 
-  local folder_name=$($GET 2> /dev/null ${MIRROR} \
+  local folder_name
+  folder_name=$($GET 2> /dev/null ${MIRROR} \
     | egrep "</a>" \
     | egrep -o 'latest-[a-z]{2,}' \
     | sort \
@@ -91,7 +92,7 @@ install_node(){
     echo -n "Downloading node version (if not cached): $1..."
     wget -cq -O "$cachefilepath" "$url"
     echo -e '\b\b\b Done'
-    test -d "$(basename "$cachedilepath" .tar.gz)" || (
+    test -d "$(basename "$cachefilepath" .tar.gz)" || (
         echo -n "Unpacking node version: $1..."
         tar -xf "$cachefilepath"
         echo -e '\b\b\b Done'
@@ -160,6 +161,15 @@ getvar(){
 isvar(){
     test -f "$root/.localn/conf/$1" || test -f "$HOME/.localn/conf/$1"
 }
+install_from_packagejson(){
+    check_command jq
+    check_command semver
+    range="$(jq -r .engines.node < package.json)"
+    # shellcheck disable=SC2046
+    # we really need to split words in display_remote_versions
+    version="$(semver -r "$range" $(display_remote_versions) | tail -n1 )"
+    install_node "$version"
+}
 
 
 os=$(uname -s)
@@ -189,6 +199,9 @@ case $1 in
         ;;
     "cachedir")
         setvarglobal cachedir "$2"
+        ;;
+    "install")
+        install_from_packagejson
         ;;
     *)
         install_node "$1"

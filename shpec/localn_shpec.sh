@@ -4,23 +4,23 @@ cd /tmp
 
 describe "localn"
     it "should fail if called uninitialized"
-        localn stable >/dev/null
+        localn stable &>/dev/null
         assert unequal "$?"  "0"
     end
 
     it "should init"
         $(/bin/localn init)
-        assert match ":$PATH" ":$PWD/.localn/bin"
+        assert grep ":$PATH" ":$PWD/.localn/bin"
     end
 
     it "shouldn't expose node before downloading"
-        node -v
+        node -v &>/dev/null
         assert unequal "$?" "0"
     end
 
     it "should download a specific version of node..."
         $(/bin/localn init)
-        localn 4.0.0
+        localn 4.0.0 &>/dev/null
         assert equal "$(node -v)" "v4.0.0"
         it "... and npm"
             npm -v &>/dev/null
@@ -55,7 +55,7 @@ describe "localn"
 
     end
 
-    it "should install yarn without using nom"
+    it "should install yarn without using npm"
         $(/bin/localn init)
         localn stable &>/dev/null
         stub_command npm
@@ -63,6 +63,18 @@ describe "localn"
         assert equal "$?" "127" # check yarn is not present
         localn module yarn &>/dev/null
         yarn --help &>/dev/null
+        assert equal "$?" "0"
+    end
+
+    it "should install node according to the package.json"
+        $(/bin/localn init)
+        echo '{"engines":{"node":">7 <9.0.0"}}' > package.json
+        localn install
+        semver -r ">7 <9.0.0" $(node -v)
+        assert equal "$?" "0"
+        echo '{"engines":{"node":">0.10 <0.12"}}' > package.json
+        localn install
+        semver -r ">0.10 <0.12" $(node -v)
         assert equal "$?" "0"
     end
 

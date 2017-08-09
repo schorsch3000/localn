@@ -1,15 +1,22 @@
 .PHONY: container test shellcheck try drone
-test: shellcheck test
+test: shellcheck shpec
 
 
-container:
+container: semver
 	docker build -t localn .
 
-
 shellcheck: container
+	@echo
+	@echo
+	@echo ------------------------------
+	@echo  Running shellcheck
+	@echo ------------------------------
 	docker run --rm -it localn shellcheck /bin/localn
 
-test: container
+shpec: container
+	@echo ------------------------------
+	@echo  Running shpec
+	@echo ------------------------------
 	docker run --rm -it localn bash /usr/local/bin/shpec
 
 drone:
@@ -20,3 +27,6 @@ drone:
 
 login: container
 	docker run --rm -v "$(PWD)/src/localn.sh:/bin/localn" -it localn /bin/bash
+
+semver: mksemver.sh
+	./mksemver.sh
