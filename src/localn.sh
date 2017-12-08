@@ -1,6 +1,21 @@
 #!/usr/bin/env bash
 set -e
 
+which "realpath" >/dev/null || {
+    realpath ()
+    {
+        f="$*";
+        if [ -d "$f" ]; then
+            base="";
+            dir="$f";
+        else
+            base="/$(basename "$f")";
+            dir=$(dirname "$f");
+        fi;
+        dir=$(cd "$dir" && /bin/pwd);
+        echo "$dir$base"
+    }
+}
 
 root="$(realpath "$PWD")"
 binpath="$root/.localn/bin"
@@ -20,8 +35,9 @@ check_command(){
 
 }
 
+
+
 check_command wget
-check_command realpath
 check_command egrep
 check_command grep
 check_command fgrep

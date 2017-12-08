@@ -5,5 +5,6 @@ ADD semver /bin
 ADD src/localn.sh /bin/localn
 RUN chmod +x /bin/localn
 ADD shpec /
+RUN rm -rf /usr/bin/realpath
 
 WORKDIR /
