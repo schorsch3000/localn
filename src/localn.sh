@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-which "realpath" >/dev/null || {
+command -v "realpath" >/dev/null || {
     realpath ()
     {
         f="$*";
@@ -31,16 +31,16 @@ abort(){
     exit 1
 }
 check_command(){
-    which "$1" >/dev/null ||  abort command "$1" not found...
+    command -v "$1" >/dev/null ||  abort command "$1" not found...
 
 }
 
 
 
 check_command wget
-check_command egrep
+check_command grep -E
 check_command grep
-check_command fgrep
+check_command grep -F
 check_command sort
 check_command tail
 check_command head
@@ -55,8 +55,8 @@ MIRROR=https://nodejs.org/dist/
 
 display_latest_stable_version() {
   $GET 2> /dev/null ${MIRROR} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
+    | grep -E "</a>" \
+    | grep -E -o '[0-9]+\.[0-9]*[02468]\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
     | tail -n1
 }
@@ -64,32 +64,26 @@ display_latest_lts_version() {
 
   local folder_name
   folder_name=$($GET 2> /dev/null ${MIRROR} \
-    | egrep "</a>" \
-    | egrep -o 'latest-[a-z]{2,}' \
+    | grep -E "</a>" \
+    | grep -E -o 'latest-[a-z]{2,}' \
     | sort \
     | tail -n1)
 
   $GET 2> /dev/null "${MIRROR}/$folder_name/" \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | grep -E "</a>" \
+    | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | head -n1
 }
 
 display_latest_version() {
-  $GET 2> /dev/null ${MIRROR} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | egrep -v '^0\.[0-7]\.' \
-    | egrep -v '^0\.8\.[0-5]$' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
+     (display_remote_versions ; (display_remote_versions | sed 's/.*/v\0./' | grep -F "v$2." | sed 's/^v\(.*\)\.$/\1/' ))| tail -n1
 }
 display_remote_versions() {
   $GET 2> /dev/null ${MIRROR} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
+    | grep -E "</a>" \
+    | grep -E -o '[0-9]+\.[0-9]+\.[0-9]+' \
     | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tr " " "\n"
+    | tr " " "\\n"
 
 }
 
@@ -126,7 +120,7 @@ install_node(){
     npm -v
 }
 
-echo "$PATH" | fgrep -q "$binpath" || abort localn is not in path, you should run \$\("$0" init\)
+echo "$PATH" | grep -F -q "$binpath" || abort localn is not in path, you should run \$\("$0" init\)
 
 install_module(){
 case $1 in
@@ -194,7 +188,7 @@ arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
 
 
 mkdir -p ./.localn/bin/
-which wget >/dev/null || abort wget required
+command -v wget >/dev/null || abort wget required
 
 
 case $1 in
@@ -208,7 +202,7 @@ case $1 in
         install_node "$(display_latest_lts_version)"
         ;;
     "latest")
-        install_node "$(display_latest_version)"
+        install_node "$(display_latest_version "$@")"
         ;;
     "module")
         install_module "$2"
@@ -222,3 +216,4 @@ case $1 in
     *)
         install_node "$1"
 esac
+
