@@ -18,6 +18,12 @@ to install and use the last stable release version
 `localn latest` 
 to install and use the last (maybe unstable) release version
 
+`localn latest 7` 
+to install and use the last 7.x.x release version
+
+`localn latest 7.1` 
+to install and use the last 7.1.x release version
+
 `localn install`
 to install the highest possible node version matching .engines.node of the package.json in path 
 
