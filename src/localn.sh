@@ -76,13 +76,7 @@ display_latest_lts_version() {
 }
 
 display_latest_version() {
-  $GET 2> /dev/null ${MIRROR} \
-    | egrep "</a>" \
-    | egrep -o '[0-9]+\.[0-9]+\.[0-9]+' \
-    | egrep -v '^0\.[0-7]\.' \
-    | egrep -v '^0\.8\.[0-5]$' \
-    | sort -u -k 1,1n -k 2,2n -k 3,3n -t . \
-    | tail -n1
+     (display_remote_versions ; (display_remote_versions | sed 's/.*/v\0./' | fgrep "v$2." | sed 's/^v\(.*\)\.$/\1/' ))| tail -n1
 }
 display_remote_versions() {
   $GET 2> /dev/null ${MIRROR} \
@@ -208,7 +202,7 @@ case $1 in
         install_node "$(display_latest_lts_version)"
         ;;
     "latest")
-        install_node "$(display_latest_version)"
+        install_node "$(display_latest_version "$@")"
         ;;
     "module")
         install_module "$2"
@@ -222,3 +216,4 @@ case $1 in
     *)
         install_node "$1"
 esac
+

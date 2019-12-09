@@ -29,16 +29,7 @@ describe "localn"
         rm -rf .localn
     end
 
-    it "should download a lts version of node"
-        $(/bin/localn init)
-        localn lts &>/dev/null
-        assert test "$(node -v | egrep -q ^v[0-9]+\\.[0-9]+[02468]+\\.)"
-        rm -rf .localn
-
-    end
-
     it "should download the latest version of node"
-        $(/bin/localn init)
         localn latest &>/dev/null
         node -v &>/dev/null
         assert equal "$?" "0"
@@ -46,8 +37,22 @@ describe "localn"
 
     end
 
+    it "should download the latest version of node in a given range"
+        localn latest 4 &>/dev/null
+        node -v &>/dev/null
+        assert equal "$?" "0"
+        assert equal "$(node -v)" "v4.9.1"
+        rm -rf .localn
+
+
+        localn latest 4.8 &>/dev/null
+        node -v &>/dev/null
+        assert equal "$?" "0"
+        assert equal "$(node -v)" "v4.8.7"
+        rm -rf .localn
+    end
+
     it "should download the latest stable version of node"
-        $(/bin/localn init)
         localn stable &>/dev/null
         node -v &>/dev/null
         assert equal "$?" "0"
@@ -56,7 +61,6 @@ describe "localn"
     end
 
     it "should install yarn without using npm"
-        $(/bin/localn init)
         localn stable &>/dev/null
         stub_command npm
         yarn --help &>/dev/null
@@ -67,7 +71,6 @@ describe "localn"
     end
 
     it "should install node according to the package.json"
-        $(/bin/localn init)
         echo '{"engines":{"node":">7 <9.0.0"}}' > package.json
         localn install
         semver -r ">7 <9.0.0" $(node -v)
