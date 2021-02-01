@@ -21,7 +21,7 @@ root="$(realpath "$PWD")"
 binpath="$root/.localn/bin"
 mkdir -p "$binpath"
 if [ "$1" == "init" ]; then
-    echo export PATH="$binpath:$PATH"
+    echo "export PATH=\"$binpath:$PATH\""
     exit
 fi
 
@@ -190,7 +190,8 @@ arch=$(uname -m | sed 's/x86_64/x64/' | sed 's/i.86/x86/')
 mkdir -p ./.localn/bin/
 command -v wget >/dev/null || abort wget required
 
-
+display_remote_versions
+exit
 case $1 in
     "")
         exit 1
