@@ -21,7 +21,7 @@ root="$(realpath "$PWD")"
 binpath="$root/.localn/bin"
 mkdir -p "$binpath"
 if [ "$1" == "init" ]; then
-    echo export PATH="$binpath:$PATH"
+    echo "export PATH=\"$binpath:$PATH\""
     exit
 fi
 
