@@ -3,7 +3,7 @@ install and use node versions per project
 
 ## usage
 
-`$(localn init)` 
+`eval $(localn init)` 
 to set your path
 
 `localn 4.3.0` 
