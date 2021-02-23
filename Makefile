@@ -19,11 +19,7 @@ shpec: container
 	@echo ------------------------------
 	docker run --rm -it localn bash /usr/local/bin/shpec
 
-drone:
-	rm -rf .localn
-	shellcheck src/*.sh
-	cp -rp src/localn.sh /bin/localn
-	shpec
+
 
 login: container
 	docker run --rm -v "$(PWD)/src/localn.sh:/bin/localn" -it localn /bin/bash

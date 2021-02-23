@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
+set -ex
 rm -rf semverbuild
 mkdir semverbuild
 cd semverbuild
-$(../src/localn.sh init)
+eval $(../src/localn.sh init)
 ../src/localn.sh 12.0.0
 ../src/localn.sh module semver
 ../src/localn.sh module pkg

@@ -9,7 +9,7 @@ describe "localn"
     end
 
     it "should init"
-        $(/bin/localn init)
+        eval $(/bin/localn init)
         assert grep ":$PATH" ":$PWD/.localn/bin"
     end
 
@@ -19,7 +19,7 @@ describe "localn"
     end
 
     it "should download a specific version of node..."
-        $(/bin/localn init)
+        eval $(/bin/localn init)
         localn 4.0.0 &>/dev/null
         assert equal "$(node -v)" "v4.0.0"
         it "... and npm"
